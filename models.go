@@ -17,6 +17,15 @@ type User struct {
 	ApiKey    string    `json:"chave_API"`
 }
 
+type Feed struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"criado_em"`
+	UpdatedAt time.Time `json:"atualizado_em"`
+	Name      string    `json:"nome"`
+	Url       string    `json:"url"`
+	UserID    uuid.UUID `json:"usuário"`
+}
+
 func SQLCUserToUser(sqlcUser database.User) User {
 	return User{
 		ID:        sqlcUser.ID,
@@ -24,5 +33,16 @@ func SQLCUserToUser(sqlcUser database.User) User {
 		UpdatedAt: sqlcUser.UpdatedAt,
 		Name:      sqlcUser.Name,
 		ApiKey:    sqlcUser.ApiKey,
+	}
+}
+
+func SQLCFeedToFeed(sqlcFeed database.Feed) Feed {
+	return Feed{
+		ID:        sqlcFeed.ID,
+		CreatedAt: sqlcFeed.CreatedAt,
+		UpdatedAt: sqlcFeed.UpdatedAt,
+		Name:      sqlcFeed.Name,
+		Url:       sqlcFeed.Url,
+		UserID:    sqlcFeed.UserID,
 	}
 }

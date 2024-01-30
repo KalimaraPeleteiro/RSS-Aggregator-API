@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/KalimaraPeleteiro/RSS-Aggregator/internal/auth"
 	"github.com/KalimaraPeleteiro/RSS-Aggregator/internal/database"
 	"github.com/google/uuid"
 )
@@ -53,20 +52,39 @@ func (apiConfiguration *apiConfig) handlerCreateUser(response http.ResponseWrite
 }
 
 // Buscando Usuário
-func (apiConfiguration *apiConfig) handlerGetUserByAPIKey(response http.ResponseWriter, request *http.Request) {
-	key, err := auth.GetAPIKey(request.Header)
-
-	if err != nil {
-		errorJSON(response, 403, fmt.Sprintf("Erro de autenticação: %v", err))
-		return
-	}
-
-	user, err := apiConfiguration.database.GetUseByAPIKey(request.Context(), key)
-
-	if err != nil {
-		errorJSON(response, 400, fmt.Sprintf("Não consegui encontrar usuários com essa chave. Talvez você digitou errado?"))
-		return
-	}
-
+func (apiConfiguration *apiConfig) handlerGetUserByAPIKey(response http.ResponseWriter, request *http.Request, user database.User) {
 	JSONResponse(response, 200, SQLCUserToUser(user))
+}
+
+// Adicionando Feeds aos Usuários
+func (apiConfiguration *apiConfig) handlerCreateFeed(response http.ResponseWriter, request *http.Request, user database.User) {
+	type parameters struct {
+		Name string `json:"nome"`
+		Url  string `json:"url"`
+	}
+
+	decoder := json.NewDecoder(request.Body)
+	params := parameters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		errorJSON(response, 400, fmt.Sprintf("Erro ao decodificar JSON: %s", err))
+		return
+	}
+
+	feed, err := apiConfiguration.database.CreateFeed(request.Context(), database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		Name:      params.Name,
+		Url:       params.Url,
+		UserID:    user.ID,
+	})
+
+	if err != nil {
+		errorJSON(response, 400, fmt.Sprintf("Erro ao adicionar feed: %s", err))
+		return
+	}
+
+	JSONResponse(response, 201, SQLCFeedToFeed(feed))
+
 }
