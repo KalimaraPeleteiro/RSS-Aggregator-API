@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/KalimaraPeleteiro/RSS-Aggregator/internal/auth"
 	"github.com/KalimaraPeleteiro/RSS-Aggregator/internal/database"
 	"github.com/google/uuid"
 )
@@ -47,6 +48,25 @@ func (apiConfiguration *apiConfig) handlerCreateUser(response http.ResponseWrite
 		return
 	}
 
-	JSONResponse(response, 200, SQLCUserToUser(user))
+	JSONResponse(response, 201, SQLCUserToUser(user))
 
+}
+
+// Buscando Usuário
+func (apiConfiguration *apiConfig) handlerGetUserByAPIKey(response http.ResponseWriter, request *http.Request) {
+	key, err := auth.GetAPIKey(request.Header)
+
+	if err != nil {
+		errorJSON(response, 403, fmt.Sprintf("Erro de autenticação: %v", err))
+		return
+	}
+
+	user, err := apiConfiguration.database.GetUseByAPIKey(request.Context(), key)
+
+	if err != nil {
+		errorJSON(response, 400, fmt.Sprintf("Não consegui encontrar usuários com essa chave. Talvez você digitou errado?"))
+		return
+	}
+
+	JSONResponse(response, 200, SQLCUserToUser(user))
 }
