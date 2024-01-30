@@ -26,6 +26,14 @@ type Feed struct {
 	UserID    uuid.UUID `json:"usuário"`
 }
 
+type FollowingFeed struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"criado_em"`
+	UpdatedAt time.Time `json:"atualizado_em"`
+	UserID    uuid.UUID `json:"usuário"`
+	FeedID    uuid.UUID `json:"feed"`
+}
+
 func SQLCUserToUser(sqlcUser database.User) User {
 	return User{
 		ID:        sqlcUser.ID,
@@ -51,6 +59,25 @@ func SQLCFeedsToFeeds(sqlcFeed []database.Feed) []Feed {
 	feeds := []Feed{}
 	for _, feed := range sqlcFeed {
 		feeds = append(feeds, SQLCFeedToFeed(feed))
+	}
+
+	return feeds
+}
+
+func SQLCFollowingFeedToFollowingFeed(sqlcFollowingFeed database.FollowingFeed) FollowingFeed {
+	return FollowingFeed{
+		ID:        sqlcFollowingFeed.ID,
+		CreatedAt: sqlcFollowingFeed.CreatedAt,
+		UpdatedAt: sqlcFollowingFeed.UpdatedAt,
+		UserID:    sqlcFollowingFeed.UserID,
+		FeedID:    sqlcFollowingFeed.FeedID,
+	}
+}
+
+func SQLCFollowingFeedsToFollowingFeeds(sqlcFeeds []database.FollowingFeed) []FollowingFeed {
+	feeds := []FollowingFeed{}
+	for _, feed := range sqlcFeeds {
+		feeds = append(feeds, SQLCFollowingFeedToFollowingFeed(feed))
 	}
 
 	return feeds
