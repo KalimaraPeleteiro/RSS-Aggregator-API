@@ -46,3 +46,12 @@ func SQLCFeedToFeed(sqlcFeed database.Feed) Feed {
 		UserID:    sqlcFeed.UserID,
 	}
 }
+
+func SQLCFeedsToFeeds(sqlcFeed []database.Feed) []Feed {
+	feeds := []Feed{}
+	for _, feed := range sqlcFeed {
+		feeds = append(feeds, SQLCFeedToFeed(feed))
+	}
+
+	return feeds
+}
