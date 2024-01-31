@@ -71,6 +71,7 @@ func main() {
 	v1Router.Post("/users/follow", apiConfiguration.middlewareAuth(apiConfiguration.handlerFollowNewFeed))
 	v1Router.Get("/users/my_feeds", apiConfiguration.middlewareAuth(apiConfiguration.handlerGetAllUserFollowingFeeds))
 	v1Router.Delete("/users/unfollow/{feed_id}", apiConfiguration.middlewareAuth(apiConfiguration.handlerUnfollowFeed))
+	v1Router.Get("/users/my_feeds/posts", apiConfiguration.middlewareAuth(apiConfiguration.handlerReturnPostsFromFollowedFeeds))
 
 	router.Mount("/v1", v1Router)
 

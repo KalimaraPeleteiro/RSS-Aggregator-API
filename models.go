@@ -34,6 +34,17 @@ type FollowingFeed struct {
 	FeedID    uuid.UUID `json:"feed"`
 }
 
+type Post struct {
+	ID          uuid.UUID `json:"id"`
+	CreatedAt   time.Time `json:"criado_em"`
+	UpdatedAt   time.Time `json:"atualizado_em"`
+	Title       string    `json:"título"`
+	Description *string   `json:"descrição"`
+	PublishedAt time.Time `json:"publicado_em"`
+	Url         string    `json:"url"`
+	FeedID      uuid.UUID `json:"feed"`
+}
+
 func SQLCUserToUser(sqlcUser database.User) User {
 	return User{
 		ID:        sqlcUser.ID,
@@ -81,4 +92,32 @@ func SQLCFollowingFeedsToFollowingFeeds(sqlcFeeds []database.FollowingFeed) []Fo
 	}
 
 	return feeds
+}
+
+func SQLCPostToPost(sqlcPost database.Post) Post {
+	var description *string
+	if sqlcPost.Description.Valid {
+		description = &sqlcPost.Description.String
+	}
+
+	return Post{
+		ID:          sqlcPost.ID,
+		CreatedAt:   sqlcPost.CreatedAt,
+		UpdatedAt:   sqlcPost.UpdatedAt,
+		Title:       sqlcPost.Title,
+		Description: description,
+		PublishedAt: sqlcPost.PublishedAt,
+		Url:         sqlcPost.Url,
+		FeedID:      sqlcPost.FeedID,
+	}
+}
+
+func SQLCPostsToPost(sqlcPosts []database.Post) []Post {
+	posts := []Post{}
+
+	for _, post := range sqlcPosts {
+		posts = append(posts, SQLCPostToPost(post))
+	}
+
+	return posts
 }
