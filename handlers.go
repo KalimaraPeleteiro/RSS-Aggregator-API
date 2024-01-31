@@ -164,5 +164,4 @@ func (apiConfiguration apiConfig) handlerUnfollowFeed(response http.ResponseWrit
 	}
 
 	JSONResponse(response, 200, struct{}{})
-
 }
