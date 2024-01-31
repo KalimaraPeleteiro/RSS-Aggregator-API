@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/KalimaraPeleteiro/RSS-Aggregator/internal/database"
 	"github.com/go-chi/chi/v5"
@@ -41,9 +42,12 @@ func main() {
 		log.Fatal("Não consegui conectar ao banco de dados.")
 	}
 
+	database := database.New(connection)
 	apiConfiguration := apiConfig{
-		database: database.New(connection),
+		database: database,
 	}
+
+	go startScraping(database, 10, time.Minute)
 
 	// Criando o Servidor
 	router := chi.NewRouter()
