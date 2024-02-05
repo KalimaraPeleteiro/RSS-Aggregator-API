@@ -23,14 +23,14 @@ type Feed struct {
 	UpdatedAt time.Time `json:"atualizado_em"`
 	Name      string    `json:"nome"`
 	Url       string    `json:"url"`
-	UserID    uuid.UUID `json:"usuário"`
+	UserID    uuid.UUID `json:"usuario"`
 }
 
 type FollowingFeed struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"criado_em"`
 	UpdatedAt time.Time `json:"atualizado_em"`
-	UserID    uuid.UUID `json:"usuário"`
+	UserID    uuid.UUID `json:"usuario"`
 	FeedID    uuid.UUID `json:"feed"`
 }
 
@@ -38,8 +38,8 @@ type Post struct {
 	ID          uuid.UUID `json:"id"`
 	CreatedAt   time.Time `json:"criado_em"`
 	UpdatedAt   time.Time `json:"atualizado_em"`
-	Title       string    `json:"título"`
-	Description *string   `json:"descrição"`
+	Title       string    `json:"titulo"`
+	Description *string   `json:"descricao"`
 	PublishedAt time.Time `json:"publicado_em"`
 	Url         string    `json:"url"`
 	FeedID      uuid.UUID `json:"feed"`
