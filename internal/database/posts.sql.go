@@ -56,27 +56,41 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 }
 
 const getPostsForUser = `-- name: GetPostsForUser :many
-SELECT posts.id, posts.created_at, posts.updated_at, posts.title, posts.description, posts.published_at, posts.url, posts.feed_id from posts 
-JOIN following_feeds ON posts.feed_id = following_feeds.feed_id
-WHERE following_feeds.user_id = $1
-ORDER BY posts.published_at DESC
-LIMIT $2
+WITH ranked_posts AS (
+    SELECT posts.id, posts.created_at, posts.updated_at, posts.title, posts.description, posts.published_at, posts.url, posts.feed_id,
+           ROW_NUMBER() OVER (PARTITION BY posts.feed_id ORDER BY posts.published_at DESC) AS rn, feeds.name AS feed
+    FROM posts
+    JOIN following_feeds ON posts.feed_id = following_feeds.feed_id
+	JOIN feeds ON posts.feed_id = feeds.id
+    WHERE following_feeds.user_id = $1
+)
+SELECT id, created_at, updated_at, title, description, published_at, url, feed_id, rn, feed FROM ranked_posts
+WHERE rn <=  5
+ORDER BY published_at DESC
 `
 
-type GetPostsForUserParams struct {
-	UserID uuid.UUID
-	Limit  int32
+type GetPostsForUserRow struct {
+	ID          uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Title       string
+	Description sql.NullString
+	PublishedAt time.Time
+	Url         string
+	FeedID      uuid.UUID
+	Rn          int64
+	Feed        string
 }
 
-func (q *Queries) GetPostsForUser(ctx context.Context, arg GetPostsForUserParams) ([]Post, error) {
-	rows, err := q.db.QueryContext(ctx, getPostsForUser, arg.UserID, arg.Limit)
+func (q *Queries) GetPostsForUser(ctx context.Context, userID uuid.UUID) ([]GetPostsForUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPostsForUser, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Post
+	var items []GetPostsForUserRow
 	for rows.Next() {
-		var i Post
+		var i GetPostsForUserRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreatedAt,
@@ -86,6 +100,8 @@ func (q *Queries) GetPostsForUser(ctx context.Context, arg GetPostsForUserParams
 			&i.PublishedAt,
 			&i.Url,
 			&i.FeedID,
+			&i.Rn,
+			&i.Feed,
 		); err != nil {
 			return nil, err
 		}
