@@ -1,7 +1,7 @@
 <h1 align="center"> RSS Aggregator-API </h1>
 
 Uma API feita em Go com o pacote [Chi](https://github.com/go-chi/chi) que permite usuários seguirem novos feeds RSS, e, 
-eventualmente, receber os últimos posts dos feeds que eles seguem. Originalmente, o projeto foi feito por [Lane Wagner](https://github.com/wagslane) em um [vídeo](https://www.youtube.com/watch?v=un6ZyFkqFKo) da freeCodeCamp Academy, mas eu adaptei o design original, adicionando novas rotas e modificando o comportamento de outras para a criação de uma UI.
+eventualmente, receber os últimos posts dos feeds que eles seguem. Originalmente, o projeto foi feito por [Lane Wagner](https://github.com/wagslane) em um [vídeo](https://www.youtube.com/watch?v=un6ZyFkqFKo) da freeCodeCamp Academy, mas eu adaptei o design original, adicionando novas rotas e modificando o comportamento de outras para a criação de uma [UI](https://github.com/KalimaraPeleteiro/RSS-Aggregator).
 <br>
 
 > Para os que não conhecem, feeds RSS, ou *Really Simple Sindication* é uma forma de disponibilizar seu conteúdo em um formato de fácil acesso e interatividade para
