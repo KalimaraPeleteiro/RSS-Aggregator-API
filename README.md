@@ -64,7 +64,7 @@ Para usuários, as rotas mais importantes são as que seguem abaixo. **Todas as 
 > <br>
 > Caminho: *v1/users/unfollow/id_do_feed*
 > <br>
-> É necessário passar o id do feed a ser seguido na rota. Segue um exemplo abaixo.
+> É necessário passar o id do feed a deixar de ser seguido na rota. Segue um exemplo abaixo.
 > ```
 > v1/users/unfollow/d5400ea0-fbe7-4731-b0e9-d828b0ab7989
 > ```
