@@ -64,7 +64,7 @@ func (apiConfiguration apiConfig) handlerUnfollowFeed(response http.ResponseWrit
 	}
 
 	err = apiConfiguration.database.UnfollowFeed(request.Context(), database.UnfollowFeedParams{
-		ID:     feed_id,
+		FeedID: feed_id,
 		UserID: user.ID,
 	})
 

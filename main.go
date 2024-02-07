@@ -54,7 +54,7 @@ func main() {
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
-		AllowedMethods:   []string{"GET", "POST"},
+		AllowedMethods:   []string{"GET", "POST", "DELETE"},
 		AllowedHeaders:   []string{"*"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
@@ -68,7 +68,7 @@ func main() {
 	v1Router.Post("/users/create", apiConfiguration.handlerCreateUser)
 	v1Router.Get("/users/getUser", apiConfiguration.middlewareAuth(apiConfiguration.handlerGetUserByAPIKey))
 	v1Router.Post("/feeds/add", apiConfiguration.middlewareAuth(apiConfiguration.handlerCreateFeed))
-	v1Router.Get("/feeds/all", apiConfiguration.handlerGetAllFeeds)
+	v1Router.Get("/feeds/all", apiConfiguration.middlewareAuth(apiConfiguration.handlerGetAllFeeds))
 	v1Router.Post("/users/follow", apiConfiguration.middlewareAuth(apiConfiguration.handlerFollowNewFeed))
 	v1Router.Get("/users/my_feeds", apiConfiguration.middlewareAuth(apiConfiguration.handlerGetAllUserFollowingFeeds))
 	v1Router.Delete("/users/unfollow/{feed_id}", apiConfiguration.middlewareAuth(apiConfiguration.handlerUnfollowFeed))

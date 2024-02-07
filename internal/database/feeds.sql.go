@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -50,18 +51,32 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 }
 
 const getFeeds = `-- name: GetFeeds :many
-SELECT id, created_at, updated_at, name, url, user_id, last_time_fetched FROM feeds
+SELECT feeds.id, feeds.created_at, feeds.updated_at, feeds.name, feeds.url, feeds.user_id, feeds.last_time_fetched,
+       CASE WHEN following_feeds.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following
+FROM feeds
+LEFT JOIN following_feeds ON feeds.id = following_feeds.feed_id AND following_feeds.user_id = $1
 `
 
-func (q *Queries) GetFeeds(ctx context.Context) ([]Feed, error) {
-	rows, err := q.db.QueryContext(ctx, getFeeds)
+type GetFeedsRow struct {
+	ID              uuid.UUID
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	Name            string
+	Url             string
+	UserID          uuid.UUID
+	LastTimeFetched sql.NullTime
+	IsFollowing     bool
+}
+
+func (q *Queries) GetFeeds(ctx context.Context, userID uuid.UUID) ([]GetFeedsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFeeds, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Feed
+	var items []GetFeedsRow
 	for rows.Next() {
-		var i Feed
+		var i GetFeedsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreatedAt,
@@ -70,6 +85,7 @@ func (q *Queries) GetFeeds(ctx context.Context) ([]Feed, error) {
 			&i.Url,
 			&i.UserID,
 			&i.LastTimeFetched,
+			&i.IsFollowing,
 		); err != nil {
 			return nil, err
 		}

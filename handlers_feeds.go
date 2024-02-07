@@ -55,12 +55,12 @@ func (apiConfiguration *apiConfig) handlerCreateFeed(response http.ResponseWrite
 }
 
 // Retornando todos os Feeds
-func (apiConfiguration apiConfig) handlerGetAllFeeds(response http.ResponseWriter, request *http.Request) {
-	feeds, err := apiConfiguration.database.GetFeeds(request.Context())
+func (apiConfiguration apiConfig) handlerGetAllFeeds(response http.ResponseWriter, request *http.Request, user database.User) {
+	feeds, err := apiConfiguration.database.GetFeeds(request.Context(), user.ID)
 	if err != nil {
 		errorJSON(response, 400, fmt.Sprintf("Não consegui buscar os feeds: %v", err))
 		return
 	}
 
-	JSONResponse(response, 200, SQLCFeedsToFeeds(feeds))
+	JSONResponse(response, 200, feeds)
 }
