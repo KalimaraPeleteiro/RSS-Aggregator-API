@@ -17,7 +17,7 @@ INSERT INTO users(id, created_at, updated_at, name, api_key)
 VALUES($1, $2, $3, $4,
     encode(sha256(random()::text::bytea), 'hex')
 )
-RETURNING id, created_at, updated_at, name, api_key
+RETURNING id, created_at, updated_at, name, api_key, password
 `
 
 type CreateUserParams struct {
@@ -41,12 +41,13 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.UpdatedAt,
 		&i.Name,
 		&i.ApiKey,
+		&i.Password,
 	)
 	return i, err
 }
 
 const getUseByAPIKey = `-- name: GetUseByAPIKey :one
-SELECT id, created_at, updated_at, name, api_key FROM users where api_key = $1
+SELECT id, created_at, updated_at, name, api_key, password FROM users where api_key = $1
 `
 
 func (q *Queries) GetUseByAPIKey(ctx context.Context, apiKey string) (User, error) {
@@ -58,6 +59,31 @@ func (q *Queries) GetUseByAPIKey(ctx context.Context, apiKey string) (User, erro
 		&i.UpdatedAt,
 		&i.Name,
 		&i.ApiKey,
+		&i.Password,
+	)
+	return i, err
+}
+
+const loginAuthentication = `-- name: LoginAuthentication :one
+SELECT id, created_at, updated_at, name, api_key, password FROM users where name = $1 and password = $2
+LIMIT 1
+`
+
+type LoginAuthenticationParams struct {
+	Name     string
+	Password string
+}
+
+func (q *Queries) LoginAuthentication(ctx context.Context, arg LoginAuthenticationParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, loginAuthentication, arg.Name, arg.Password)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.ApiKey,
+		&i.Password,
 	)
 	return i, err
 }

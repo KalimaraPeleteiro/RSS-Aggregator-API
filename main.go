@@ -54,7 +54,7 @@ func main() {
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
-		AllowedMethods:   []string{"GET"},
+		AllowedMethods:   []string{"GET", "POST"},
 		AllowedHeaders:   []string{"*"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
@@ -64,6 +64,7 @@ func main() {
 	v1Router := chi.NewRouter() // Paginação
 	v1Router.Get("/", handlerServerReadiness)
 	v1Router.Get("/error", handlerDefaultError)
+	v1Router.Post("/login", apiConfiguration.handlerLoginAuthentication)
 	v1Router.Post("/users/create", apiConfiguration.handlerCreateUser)
 	v1Router.Get("/users/getUser", apiConfiguration.middlewareAuth(apiConfiguration.handlerGetUserByAPIKey))
 	v1Router.Post("/feeds/add", apiConfiguration.middlewareAuth(apiConfiguration.handlerCreateFeed))

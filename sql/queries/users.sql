@@ -7,3 +7,7 @@ RETURNING *;
 
 -- name: GetUseByAPIKey :one
 SELECT * FROM users where api_key = $1;
+
+-- name: LoginAuthentication :one
+SELECT * FROM users where name = $1 and password = $2
+LIMIT 1;
