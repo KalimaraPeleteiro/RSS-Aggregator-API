@@ -13,7 +13,8 @@ import (
 // Criando Usuários
 func (apiConfiguration *apiConfig) handlerCreateUser(response http.ResponseWriter, request *http.Request) {
 	type parameters struct {
-		Name string `json:"nome"`
+		Name     string `json:"nome"`
+		Password string `json:"senha"`
 	}
 
 	decoder := json.NewDecoder(request.Body)
@@ -29,6 +30,7 @@ func (apiConfiguration *apiConfig) handlerCreateUser(response http.ResponseWrite
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
+		Password:  params.Password,
 	})
 
 	if err != nil {

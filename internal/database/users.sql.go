@@ -13,9 +13,10 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users(id, created_at, updated_at, name, api_key)
+INSERT INTO users(id, created_at, updated_at, name, api_key, password)
 VALUES($1, $2, $3, $4,
-    encode(sha256(random()::text::bytea), 'hex')
+    encode(sha256(random()::text::bytea), 'hex'),
+    $5
 )
 RETURNING id, created_at, updated_at, name, api_key, password
 `
@@ -25,6 +26,7 @@ type CreateUserParams struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Name      string
+	Password  string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -33,6 +35,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.Name,
+		arg.Password,
 	)
 	var i User
 	err := row.Scan(
